@@ -8,8 +8,8 @@ python3 run.py
 > RNN structure, padding function, and train/test operate in here.
 ### runy.py
 > Before training(e.g. infer vectors), using train/test in here.
-### Pad.py
-> Easy sample for present how to padding.
+### preprocess.py
+> Utilize tools.
 ## Data description
 
 [[[100, 100...], y0],  
