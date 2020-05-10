@@ -7,6 +7,8 @@ from torch.utils.data import Dataset
 
 from config import Params
 
+DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 
 class PadSequence:
 
@@ -31,7 +33,7 @@ class PadSequence:
             labels.append(y)
             lengths.append(len(X))
         sequence_padded = pad_sequence(sequences, batch_first=True)
-        return sequence_padded.cuda(), tensor(labels).long().cuda(), tensor(lengths).cuda()
+        return sequence_padded.to(DEVICE), tensor(labels).long().to(DEVICE), tensor(lengths).to(DEVICE)
 
 
 class LoadingDataset(Dataset):
@@ -50,7 +52,6 @@ class LoadingDataset(Dataset):
 class _Classifier(nn.Module):
     """
     Bidirectional GRU
-
     """
 
     def __init__(self):
@@ -100,7 +101,7 @@ class TrainTest:
     """
 
     def __init__(self):
-        self.model = _Classifier().cuda()
+        self.model = _Classifier().to(DEVICE)
         self.optimizer = Adam(self.model.parameters(), lr=Params.LR)
         self.criterion = CrossEntropyLoss()
 
@@ -133,3 +134,6 @@ class TrainTest:
             # if multi gpu, remember use loss.mean()
             loss.backward()
             self.optimizer.step()
+
+    def save(self):
+        torch.save(self.model.state_dict(), Params.PATH_SAVE)
